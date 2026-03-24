@@ -1,0 +1,44 @@
+# gazebo_param.yaml
+# ==================
+# Configuration for the BlueROV2 Heavy DOBMPC.
+#
+# CHANGES vs bluerov2_dobmpc/config/gazebo_param.yaml:
+#   1. ref_traj: points to the heavy trajectory folder
+#      (create bluerov2heavy_mpc/traj/ or reuse bluerov2_mpc/traj/ — same format)
+#   2. applied_force/torque paths: updated to bluerov2heavy_dobmpc/config/
+#   3. yaml_name: updated path
+#   4. read_wrench: 0 = periodic, 1 = constant, 2 = read from txt file
+#   5. compensate_d: set true to enable EAOB disturbance compensation
+#
+# Parameter descriptions:
+#   auto_yaw    — if true, yaw reference is set automatically along trajectory
+#   read_wrench — 0: sinusoidal disturbance; 1: constant 10N; 2: read from .txt
+#   compensate_d— false: no EAOB compensation (baseline MPC); true: DOBMPC active
+#   ref_traj    — absolute path to trajectory .txt file (same format as standard)
+#   applied_*   — paths to pre-generated disturbance data (READ_WRENCH=2 only)
+
+auto_yaw: false
+read_wrench: 0
+compensate_d: false
+
+# Trajectory — reuse from the standard mpc package (same CSV format)
+# or create a heavy-specific one in bluerov2heavy_mpc/traj/
+ref_traj: /home/fyp/bluerov_ws/src/bluerov2/bluerov2_mpc/traj/slam_circle.txt
+
+# Disturbance files (READ_WRENCH=2) — same .txt files, just updated path
+applied_forcex:  /home/fyp/bluerov_ws/src/bluerov2/bluerov2heavy_dobmpc/config/forcex.txt
+applied_forcey:  /home/fyp/bluerov_ws/src/bluerov2/bluerov2heavy_dobmpc/config/forcey.txt
+applied_forcez:  /home/fyp/bluerov_ws/src/bluerov2/bluerov2heavy_dobmpc/config/forcez.txt
+applied_torquez: /home/fyp/bluerov_ws/src/bluerov2/bluerov2heavy_dobmpc/config/torquez.txt
+
+yaml_name: /config/gazebo_param.yaml
+
+# ── Disturbance parameter overrides (READ_WRENCH=0 — manual fixed values) ────
+# These are only used when compensate_d=false and read_wrench=0 is NOT active.
+# Units: [N] for force, [Nm] for torque.
+disturbance_x:     0.0
+disturbance_y:     0.0
+disturbance_z:     0.0
+disturbance_phi:   0.0
+disturbance_theta: 0.0
+disturbance_psi:   0.0
