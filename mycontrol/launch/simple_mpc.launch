@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="mycontrol" type="run_mpc.py" name="simple_mpc" output="screen">
+    </node>
+
+    <node name="bluerov2heavy_mpc_node" pkg="bluerov2heavy_mpc" type="bluerov2heavy_mpc_node" output="screen">
+        <param name="ref_traj" type = "string" value="$(find bluerov2heavy_mpc)/traj/circle.txt" />
+    </node>
+</launch>

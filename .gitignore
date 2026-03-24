@@ -1,0 +1,23 @@
+# ROS build artifacts
+build/
+devel/
+logs/
+.catkin_workspace
+
+# Acados generated C solver code (rebuilt by generate_c_code.py)
+bluerov2heavy_mpc/c_generated_code/
+bluerov2heavy_mpc/acados_ocp.json
+*.so
+*.o
+*.a
+
+# Log files your node writes
+*.csv
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Editor
+.vscode/
+*.swp

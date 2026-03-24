@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="room">
+    <static>true</static>
+    <link name="link">
+      <collision name="ground">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh><uri>model://room.dae</uri></mesh>
+        </geometry>
+      </collision>
+
+      <visual name="vitual_room">
+        <cast_shadows>true</cast_shadows>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh><uri>model://room.dae</uri></mesh>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://Media/materials/scripts/sand.material</uri>
+            <name>UUVSimulator/SandAndStones</name>
+          </script>
+          <emissive>
+            0.6 0.6 0.6 1.0
+          </emissive>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
