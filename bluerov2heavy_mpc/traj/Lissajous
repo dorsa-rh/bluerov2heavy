@@ -1,0 +1,65 @@
+import numpy as np
+
+dt = 0.05
+T  = 240.0
+N  = int(T / dt) + 1
+t  = np.linspace(0, T, N)
+
+Ax, Ay = 3.0, 3.0
+z_mid  = -5.0
+Az     = 1.0
+wx, wy, wz = 0.05, 0.08, 0.03
+
+traj = np.zeros((N, 20))
+
+# Position
+traj[:,0] = Ax * np.sin(wx * t)
+traj[:,1] = Ay * np.sin(wy * t)
+traj[:,2] = z_mid + Az * np.sin(wz * t)
+
+# Attitude (small motion to challenge controller)
+traj[:,3] = 0.15 * np.sin(0.07 * t)   # roll
+traj[:,4] = 0.12 * np.sin(0.05 * t)   # pitch
+traj[:,5] = 0.0                        # yaw fixed
+
+# World-frame velocities
+dx = np.gradient(traj[:,0], dt)
+dy = np.gradient(traj[:,1], dt)
+dz = np.gradient(traj[:,2], dt)
+
+# Angular rates
+traj[:,9]  = np.gradient(traj[:,3], dt)   # p
+traj[:,10] = np.gradient(traj[:,4], dt)   # q
+traj[:,11] = 0.0                           # r (no yaw rate)
+
+# FIX: rotate world-frame linear velocity into body frame at each timestep
+# NOTE: for lissajous yaw=0 always, so R=I in the horizontal plane and
+# the rotation only matters for the small pitch/roll attitude components.
+# Previously this was skipped because "yaw=0 → no rotation needed" but
+# pitch and roll still couple world z into body u and v.
+for i in range(N):
+    phi   = traj[i, 3]
+    theta = traj[i, 4]
+    psi   = traj[i, 5]   # always 0 here
+
+    cphi, sphi   = np.cos(phi),   np.sin(phi)
+    cth,  sth    = np.cos(theta), np.sin(theta)
+    cpsi, spsi   = np.cos(psi),   np.sin(psi)
+
+    R = np.array([
+        [cpsi*cth,  cpsi*sth*sphi - spsi*cphi,  cpsi*sth*cphi + spsi*sphi],
+        [spsi*cth,  spsi*sth*sphi + cpsi*cphi,  spsi*sth*cphi - cpsi*sphi],
+        [-sth,      cth*sphi,                    cth*cphi                 ]
+    ])
+
+    vel_world = np.array([dx[i], dy[i], dz[i]])
+    vel_body  = R.T @ vel_world
+
+    traj[i, 6] = vel_body[0]   # u
+    traj[i, 7] = vel_body[1]   # v
+    traj[i, 8] = vel_body[2]   # w
+
+traj[:,12:20] = 0.0
+
+np.savetxt('lissajous.txt', traj, fmt='%f')
+print("lissajous.txt saved.")

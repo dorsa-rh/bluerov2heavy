@@ -1,0 +1,62 @@
+import numpy as np
+
+dt = 0.05
+T  = 240.0
+N  = int(T / dt) + 1
+t  = np.linspace(0, T, N)
+
+r     = 3.0
+omega = 0.04
+z_mid = -7.5
+Az    = 2.5
+
+traj = np.zeros((N, 20))
+
+# Position
+traj[:,0] = r * np.cos(omega * t)
+traj[:,1] = r * np.sin(omega * t)
+traj[:,2] = z_mid + Az * np.sin(0.5 * omega * t)
+
+# Attitude
+traj[:,3] = 0.1 * np.sin(0.3 * t)     # roll
+traj[:,4] = 0.15 * np.sin(0.5 * t)    # pitch
+traj[:,5] = omega * t + np.pi/2       # yaw tangent to path
+
+# World-frame velocity (finite difference)
+dx = np.gradient(traj[:,0], dt)
+dy = np.gradient(traj[:,1], dt)
+dz = np.gradient(traj[:,2], dt)
+
+# Angular rates
+traj[:,9]  = np.gradient(traj[:,3], dt)   # p
+traj[:,10] = np.gradient(traj[:,4], dt)   # q
+traj[:,11] = omega                         # r
+
+# FIX: rotate world-frame linear velocity into body frame at each timestep
+for i in range(N):
+    phi   = traj[i, 3]
+    theta = traj[i, 4]
+    psi   = traj[i, 5]
+
+    cphi, sphi   = np.cos(phi),   np.sin(phi)
+    cth,  sth    = np.cos(theta), np.sin(theta)
+    cpsi, spsi   = np.cos(psi),   np.sin(psi)
+
+    # Rotation matrix body → world (ZYX convention)
+    R = np.array([
+        [cpsi*cth,  cpsi*sth*sphi - spsi*cphi,  cpsi*sth*cphi + spsi*sphi],
+        [spsi*cth,  spsi*sth*sphi + cpsi*cphi,  spsi*sth*cphi - cpsi*sphi],
+        [-sth,      cth*sphi,                    cth*cphi                 ]
+    ])
+
+    vel_world = np.array([dx[i], dy[i], dz[i]])
+    vel_body  = R.T @ vel_world
+
+    traj[i, 6] = vel_body[0]   # u (surge)
+    traj[i, 7] = vel_body[1]   # v (sway)
+    traj[i, 8] = vel_body[2]   # w (heave)
+
+traj[:,12:20] = 0.0
+
+np.savetxt('helix_pitch.txt', traj, fmt='%f')
+print("helix_pitch.txt saved.")
