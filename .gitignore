@@ -22,3 +22,8 @@ __pycache__/
 .vscode/
 *.swp
 bluerov2heavy_description/models/room.dae
+
+# Acados generated solver (rebuilt by generate_c_code.py)
+bluerov2heavy_mpc/scripts/c_generated_code/
+bluerov2heavy_mpc/scripts/acados_ocp.json
+bluerov2heavy_mpc/scripts/acados_sim.json
