@@ -21,3 +21,4 @@ __pycache__/
 # Editor
 .vscode/
 *.swp
+bluerov2heavy_description/models/room.dae
