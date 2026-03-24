@@ -39,9 +39,9 @@ import numpy as np
 # ======================================================================
 # TOGGLE FLAGS  —  set all False for the exact repository baseline model
 # ======================================================================
-STEP_1_NG2024_DAMPING    = False   # corrected linear damping (Ng 2024)
-STEP_2_QUADRATIC_DAMPING = False   # add quadratic drag D|v|v  (Ng 2024)
-STEP_3_PIECEWISE_HEAVE   = False   # asymmetric dive / rise heave (Ng 2024)
+STEP_1_NG2024_DAMPING    = True  # corrected linear damping (Ng 2024)
+STEP_2_QUADRATIC_DAMPING = True  # add quadratic drag D|v|v  (Ng 2024)
+STEP_3_PIECEWISE_HEAVE   = True   # asymmetric dive / rise heave (Ng 2024)
 
 
 def export_bluerov2heavy_model() -> AcadosModel:
